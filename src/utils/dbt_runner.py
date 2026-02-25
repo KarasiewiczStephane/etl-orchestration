@@ -69,6 +69,20 @@ class DbtRunner:
         """
         return self._execute(self._build_command("build"))
 
+    def snapshot(self, select: Optional[str] = None) -> subprocess.CompletedProcess:
+        """Execute dbt snapshot for SCD Type 2 dimension tracking.
+
+        Args:
+            select: Optional snapshot selection string.
+
+        Returns:
+            CompletedProcess with stdout/stderr.
+        """
+        cmd = self._build_command("snapshot")
+        if select:
+            cmd.extend(["--select", select])
+        return self._execute(cmd)
+
     def docs_generate(self) -> subprocess.CompletedProcess:
         """Generate dbt documentation.
 

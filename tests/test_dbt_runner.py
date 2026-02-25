@@ -83,6 +83,34 @@ class TestDbtRunner:
         assert "generate" in cmd
 
     @patch("src.utils.dbt_runner.subprocess.run")
+    def test_snapshot_executes_dbt_snapshot(self, mock_run: MagicMock) -> None:
+        """dbt snapshot command is executed correctly."""
+        mock_run.return_value = subprocess.CompletedProcess(
+            args=[], returncode=0, stdout="", stderr=""
+        )
+
+        runner = DbtRunner()
+        result = runner.snapshot()
+
+        assert result.returncode == 0
+        cmd = mock_run.call_args[0][0]
+        assert "snapshot" in cmd
+
+    @patch("src.utils.dbt_runner.subprocess.run")
+    def test_snapshot_with_select(self, mock_run: MagicMock) -> None:
+        """dbt snapshot passes --select argument."""
+        mock_run.return_value = subprocess.CompletedProcess(
+            args=[], returncode=0, stdout="", stderr=""
+        )
+
+        runner = DbtRunner()
+        runner.snapshot(select="snap_customers")
+
+        cmd = mock_run.call_args[0][0]
+        assert "--select" in cmd
+        assert "snap_customers" in cmd
+
+    @patch("src.utils.dbt_runner.subprocess.run")
     def test_failure_logged(self, mock_run: MagicMock) -> None:
         """Failed dbt command returns non-zero exit code."""
         mock_run.return_value = subprocess.CompletedProcess(
