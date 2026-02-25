@@ -1,0 +1,73 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: staging
+    tables:
+      - name: orders
+        columns:
+          - name: order_id
+            tests:
+              - not_null
+          - name: customer_id
+            tests:
+              - not_null
+          - name: order_date
+            tests:
+              - not_null
+
+      - name: transactions
+        columns:
+          - name: transaction_id
+            tests:
+              - not_null
+          - name: customer_id
+            tests:
+              - not_null
+
+      - name: customers
+        columns:
+          - name: customer_id
+            tests:
+              - not_null
+              - unique
+          - name: email
+            tests:
+              - not_null
+              - unique
+
+models:
+  - name: stg_orders
+    description: Staged order data with type casting
+    columns:
+      - name: order_id
+        tests:
+          - not_null
+      - name: customer_id
+        tests:
+          - not_null
+      - name: order_date
+        tests:
+          - not_null
+
+  - name: stg_transactions
+    description: Staged transaction data with type casting
+    columns:
+      - name: transaction_id
+        tests:
+          - not_null
+      - name: amount
+        tests:
+          - not_null
+
+  - name: stg_customers
+    description: Staged customer data with type casting
+    columns:
+      - name: customer_id
+        tests:
+          - not_null
+          - unique
+      - name: email
+        tests:
+          - not_null
+          - unique

@@ -1,0 +1,25 @@
+version: 2
+
+models:
+  - name: int_customer_orders
+    description: Orders enriched with customer information
+    columns:
+      - name: order_id
+        tests:
+          - not_null
+      - name: customer_id
+        tests:
+          - not_null
+      - name: line_total
+        tests:
+          - not_null
+
+  - name: int_customer_transactions
+    description: Transactions enriched with customer information
+    columns:
+      - name: transaction_id
+        tests:
+          - not_null
+      - name: customer_id
+        tests:
+          - not_null

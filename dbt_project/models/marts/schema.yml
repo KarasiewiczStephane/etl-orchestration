@@ -1,0 +1,38 @@
+version: 2
+
+models:
+  - name: mart_customer_summary
+    description: Customer-level aggregated metrics from orders and transactions
+    columns:
+      - name: customer_id
+        tests:
+          - not_null
+          - unique
+      - name: total_orders
+        tests:
+          - not_null
+      - name: total_order_revenue
+        tests:
+          - not_null
+
+  - name: mart_daily_revenue
+    description: Daily revenue aggregation from orders
+    columns:
+      - name: order_day
+        tests:
+          - not_null
+          - unique
+      - name: total_revenue
+        tests:
+          - not_null
+
+  - name: mart_category_performance
+    description: Transaction category performance metrics
+    columns:
+      - name: category
+        tests:
+          - not_null
+          - unique
+      - name: total_amount
+        tests:
+          - not_null
