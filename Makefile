@@ -1,4 +1,4 @@
-.PHONY: install test lint clean run docker airflow-up airflow-down dbt-run quality-check format metrics-report
+.PHONY: install test lint clean run docker docker-up docker-down docker-logs docker-build docker-shell dbt-run quality-check format metrics-report
 
 install:
 	pip install -r requirements.txt
@@ -25,11 +25,22 @@ docker:
 	docker build -t $(shell basename $(CURDIR)) .
 	docker run -p 8000:8000 $(shell basename $(CURDIR))
 
-airflow-up:
+docker-up:
 	docker compose up -d
+	@echo "Airflow UI: http://localhost:8080 (admin/admin)"
+	@echo "Mock API:   http://localhost:5000/api/health"
 
-airflow-down:
-	docker compose down
+docker-down:
+	docker compose down -v
+
+docker-logs:
+	docker compose logs -f
+
+docker-build:
+	docker compose build --no-cache
+
+docker-shell:
+	docker compose exec airflow-webserver bash
 
 dbt-run:
 	cd dbt_project && dbt run --profiles-dir .
