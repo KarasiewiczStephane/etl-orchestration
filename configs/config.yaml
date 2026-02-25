@@ -1,0 +1,34 @@
+project:
+  name: etl-orchestration
+  version: 1.0.0
+
+warehouse:
+  type: duckdb
+  path: data/warehouse.duckdb
+
+logging:
+  level: INFO
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: logs/etl.log
+
+paths:
+  raw_data: data/raw
+  sample_data: data/sample
+  configs: configs
+
+api:
+  mock_host: localhost
+  mock_port: 5000
+  timeout: 30
+  retry_attempts: 3
+  retry_backoff: 2
+
+airflow:
+  webserver_port: 8080
+  executor: LocalExecutor
+  load_examples: false
+
+quality:
+  row_count_min_threshold: 1
+  null_percentage_threshold: 0.5
+  freshness_hours: 24

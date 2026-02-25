@@ -1,0 +1,80 @@
+sources:
+  csv_orders:
+    type: csv
+    path: data/raw/orders/
+    file_pattern: "*.csv"
+    schema:
+      - name: order_id
+        type: INTEGER
+        nullable: false
+      - name: customer_id
+        type: INTEGER
+        nullable: false
+      - name: product_id
+        type: INTEGER
+        nullable: false
+      - name: quantity
+        type: INTEGER
+        nullable: false
+      - name: price
+        type: DOUBLE
+        nullable: false
+      - name: order_date
+        type: TIMESTAMP
+        nullable: false
+      - name: status
+        type: VARCHAR
+        nullable: false
+    incremental: true
+    bookmark_column: order_date
+
+  api_transactions:
+    type: api
+    base_url: http://localhost:5000
+    endpoint: /api/transactions
+    auth_type: api_key
+    schema:
+      - name: transaction_id
+        type: INTEGER
+        nullable: false
+      - name: customer_id
+        type: INTEGER
+        nullable: false
+      - name: amount
+        type: DOUBLE
+        nullable: false
+      - name: transaction_date
+        type: TIMESTAMP
+        nullable: false
+      - name: category
+        type: VARCHAR
+        nullable: false
+    incremental: true
+    bookmark_column: transaction_date
+    page_size: 100
+
+  db_customers:
+    type: database
+    connection_string: sqlite:///data/raw/database/source.db
+    table: customers
+    schema:
+      - name: customer_id
+        type: INTEGER
+        nullable: false
+      - name: name
+        type: VARCHAR
+        nullable: false
+      - name: email
+        type: VARCHAR
+        nullable: false
+      - name: created_at
+        type: TIMESTAMP
+        nullable: false
+      - name: updated_at
+        type: TIMESTAMP
+        nullable: false
+      - name: tier
+        type: VARCHAR
+        nullable: true
+    incremental: true
+    bookmark_column: updated_at

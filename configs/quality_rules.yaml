@@ -1,0 +1,52 @@
+quality_rules:
+  source:
+    - name: schema_validation
+      description: Validate column names and types match expected schema
+      severity: critical
+
+    - name: row_count_check
+      description: Ensure extracted data has at least minimum rows
+      severity: warning
+      params:
+        min_rows: 1
+
+    - name: null_check
+      description: Check null percentage in non-nullable columns
+      severity: critical
+      params:
+        max_null_percentage: 0.0
+
+  staging:
+    - name: freshness_check
+      description: Verify data is not stale
+      severity: warning
+      params:
+        max_hours: 24
+
+    - name: duplicate_check
+      description: Detect duplicate primary keys
+      severity: critical
+
+    - name: type_cast_check
+      description: Ensure all values can be cast to expected types
+      severity: critical
+
+  mart:
+    - name: business_rule_validation
+      description: Validate business logic constraints
+      severity: critical
+
+    - name: metric_bounds_check
+      description: Check metrics are within expected ranges
+      severity: warning
+      params:
+        min_order_amount: 0.0
+        max_order_amount: 100000.0
+
+alerts:
+  on_failure:
+    - type: log
+      level: ERROR
+    - type: webhook
+      url: ${ALERT_WEBHOOK_URL}
+      enabled: false
