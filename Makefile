@@ -1,4 +1,4 @@
-.PHONY: install test lint clean run docker docker-up docker-down docker-logs docker-build docker-shell dbt-run quality-check format metrics-report
+.PHONY: install test lint clean run docker docker-up docker-down docker-logs docker-build docker-shell dbt-run dbt-docs quality-check format metrics-report
 
 install:
 	pip install -r requirements.txt
@@ -44,6 +44,9 @@ docker-shell:
 
 dbt-run:
 	cd dbt_project && dbt run --profiles-dir .
+
+dbt-docs:
+	cd dbt_project && dbt docs generate --profiles-dir . && dbt docs serve --profiles-dir .
 
 quality-check:
 	python -m src.quality.checks
