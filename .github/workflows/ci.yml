@@ -1,0 +1,92 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install linter
+        run: pip install ruff
+
+      - name: Run ruff check
+        run: ruff check src/ tests/ dags/
+
+      - name: Run ruff format check
+        run: ruff format --check src/ tests/ dags/
+
+  test:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run tests with coverage
+        run: >
+          pytest tests/ -v --tb=short
+          --cov=src --cov-report=xml --cov-report=term-missing
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.xml
+          fail_ci_if_error: false
+
+  dag-validation:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install apache-airflow==2.8.0 \
+            --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.8.0/constraints-3.11.txt"
+
+      - name: Validate DAG syntax
+        env:
+          AIRFLOW_HOME: ${{ github.workspace }}
+          AIRFLOW__CORE__DAGS_FOLDER: ${{ github.workspace }}/dags
+        run: |
+          airflow db migrate
+          python -c "
+          from airflow.models import DagBag
+          bag = DagBag('dags/', include_examples=False)
+          if bag.import_errors:
+              for path, err in bag.import_errors.items():
+                  print(f'ERROR in {path}: {err}')
+              raise SystemExit(1)
+          print(f'Validated {len(bag.dags)} DAGs successfully')
+          "
+
+  quality-gate:
+    runs-on: ubuntu-latest
+    needs: [test, dag-validation]
+    steps:
+      - name: All checks passed
+        run: echo "All quality checks passed"
