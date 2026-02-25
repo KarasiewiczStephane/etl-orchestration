@@ -1,4 +1,4 @@
-.PHONY: install test lint clean run docker airflow-up airflow-down dbt-run quality-check format
+.PHONY: install test lint clean run docker airflow-up airflow-down dbt-run quality-check format metrics-report
 
 install:
 	pip install -r requirements.txt
@@ -36,3 +36,6 @@ dbt-run:
 
 quality-check:
 	python -m src.quality.checks
+
+metrics-report:
+	python -c "from src.monitoring.metrics import MetricsCollector; print(MetricsCollector().generate_report())"
