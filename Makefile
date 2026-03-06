@@ -1,4 +1,4 @@
-.PHONY: install test lint clean run docker docker-up docker-down docker-logs docker-build docker-shell dbt-run dbt-docs quality-check format metrics-report
+.PHONY: install test lint clean run docker docker-up docker-down docker-logs docker-build docker-shell dbt-run dbt-docs quality-check format metrics-report dashboard
 
 install:
 	pip install -r requirements.txt
@@ -53,3 +53,6 @@ quality-check:
 
 metrics-report:
 	python -c "from src.monitoring.metrics import MetricsCollector; print(MetricsCollector().generate_report())"
+
+dashboard:
+	streamlit run src/dashboard/app.py

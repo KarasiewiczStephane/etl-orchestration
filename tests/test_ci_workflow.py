@@ -75,9 +75,9 @@ class TestCIWorkflowJobs:
         """All jobs run on ubuntu-latest."""
         config = _load_workflow()
         for job_name, job in config["jobs"].items():
-            assert job["runs-on"] == "ubuntu-latest", (
-                f"{job_name} should use ubuntu-latest"
-            )
+            assert (
+                job["runs-on"] == "ubuntu-latest"
+            ), f"{job_name} should use ubuntu-latest"
 
     def test_python_version_is_311(self) -> None:
         """Python 3.11 is used across jobs."""

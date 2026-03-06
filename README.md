@@ -63,7 +63,7 @@ graph TB
 - **Data quality checks**: Schema validation, null checks, freshness, duplicates, and metric bounds
 - **Alerting**: Structured logging and webhook notifications on quality failures
 - **Lineage tracking**: Source-to-mart data lineage with upstream/downstream queries
-- **Pipeline monitoring**: Task duration, success rates, data volume tracking
+- **Pipeline monitoring**: Streamlit dashboard with task duration, success rates, and data volume tracking
 - **CI/CD**: GitHub Actions with lint, test, DAG validation, and quality gate
 
 ## Quick Start
@@ -79,11 +79,27 @@ make install
 # Run tests
 make test
 
-# Start all services with Docker
+# Run quality checks
+make quality-check
+
+# Launch the monitoring dashboard (Streamlit on localhost:8501)
+make dashboard
+```
+
+### Docker (full Airflow stack)
+
+```bash
+# Start all services (Airflow + Mock API)
 make docker-up
 
-# Access Airflow UI
-open http://localhost:8080  # admin/admin
+# Access Airflow UI at http://localhost:8080 (admin/admin)
+# Mock API available at http://localhost:5000/api/health
+
+# View logs
+make docker-logs
+
+# Stop services
+make docker-down
 ```
 
 ## Project Structure
@@ -110,6 +126,8 @@ etl-orchestration/
 │   ├── monitoring/
 │   │   ├── lineage.py             # Data lineage tracking
 │   │   └── metrics.py             # Pipeline metrics collection
+│   ├── dashboard/
+│   │   └── app.py                 # Streamlit monitoring dashboard
 │   └── utils/
 │       ├── config.py              # YAML configuration loader
 │       ├── db.py                  # DuckDB connection management
@@ -122,13 +140,17 @@ etl-orchestration/
 │   │   ├── intermediate/          # Intermediate joins (int_customer_orders, int_customer_transactions)
 │   │   └── marts/                 # Mart aggregations (mart_customer_summary, mart_daily_revenue, mart_category_performance)
 │   └── snapshots/                 # SCD Type 2 snapshots (snap_customers, snap_orders)
+├── mock_api/                      # Flask mock API server
 ├── configs/
 │   ├── config.yaml                # Central project configuration
 │   ├── sources.yaml               # Source definitions and schemas
 │   └── quality_rules.yaml         # Quality rules and alert configuration
-├── mock_api/                      # Flask mock API server
-├── tests/                         # Test suite (199 tests, 93% coverage)
-├── docker-compose.yml             # Full stack Docker Compose
+├── data/
+│   ├── raw/                       # Raw extracted data (orders, api, database)
+│   └── sample/                    # Sample CSV data for development
+├── tests/                         # pytest unit and integration tests
+├── docker-compose.yml             # Full stack Docker Compose (Airflow + Mock API)
+├── Dockerfile                     # Application Docker image
 ├── Dockerfile.airflow             # Airflow image with dbt-duckdb
 ├── .github/workflows/ci.yml       # GitHub Actions CI pipeline
 ├── pyproject.toml                 # Ruff, pytest, coverage configuration
@@ -217,8 +239,14 @@ make lint
 # Run dbt transformations
 make dbt-run
 
+# Run data quality checks
+make quality-check
+
 # Generate metrics report
 make metrics-report
+
+# Launch monitoring dashboard
+make dashboard
 
 # Docker operations
 make docker-up       # Start all services
@@ -229,8 +257,7 @@ make docker-build    # Rebuild images
 
 ## Testing
 
-- **199 tests** with **93% code coverage**
-- Python unit tests with pytest
+- pytest unit and integration tests across 19 test modules
 - dbt schema tests (not_null, unique, accepted_values)
 - Airflow DAG parse validation in CI
 - Docker Compose configuration validation
@@ -242,6 +269,7 @@ make docker-build    # Rebuild images
 - **Warehouse**: DuckDB
 - **Transformations**: dbt-duckdb
 - **Quality**: Custom Python quality framework
+- **Monitoring**: Streamlit + Plotly
 - **CI/CD**: GitHub Actions
 - **Containerization**: Docker Compose
 - **Language**: Python 3.11
