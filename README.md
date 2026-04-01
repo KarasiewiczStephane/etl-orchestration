@@ -274,6 +274,11 @@ make docker-build    # Rebuild images
 - **Containerization**: Docker Compose
 - **Language**: Python 3.11
 
+
+## Author
+
+**Stéphane Karasiewicz** — [skarazdata.com](https://skarazdata.com) | [LinkedIn](https://www.linkedin.com/in/stephane-karasiewicz/)
+
 ## License
 
 MIT
